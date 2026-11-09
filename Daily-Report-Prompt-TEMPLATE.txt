@@ -1,0 +1,39 @@
+Run this every weekday (Monday–Friday) at 8:00 AM my local time.
+
+Review all of {{NAME}}'s ({{EMAIL}}, {{TITLE}}, {{COMPANY}}) activity from the PREVIOUS WORKDAY in their local time zone ({{TIMEZONE}}), covering the full day from 12:00 AM to 11:59 PM: on Monday cover the prior Friday; Tuesday–Friday cover the day before. Sources: Outlook emails received and sent, Teams chats and channel conversations, calendar meetings, meeting transcripts/recaps/notes, Planner and To Do tasks if accessible, and OneDrive/SharePoint documents they edited that day. Ignore marketing/vendor newsletters.
+
+Build a detailed daily work summary they can copy into timesheets, project records and ConnectWise. Cover customer-facing work, project work, meetings, planning, administrative tasks and internal coordination. Consolidate duplicate conversations across Teams, email and meetings into one entry per customer/project. Include times (local time) for every meeting, completed work item, decision, customer commitment and action item assigned or closed. Include ConnectWise ticket numbers wherever found. Prioritize actual work performed, decisions, customer interactions, deliverables and documented outcomes over general meeting attendance. Only include facts found in their data; never invent anything; note any sources that could not be accessed.
+
+Use this exact structure:
+
+Subject: Daily Work Activity Summary – [Day, Month Date, Year]
+
+CUSTOMER / PROJECT WORK — for each customer/project: Customer/Project; Time(s) Worked; Work Performed; Meetings ([Time] – [Meeting Name] – Outcome); Decisions Made ([Time] – Decision); Deliverables Completed; Customer Commitments; Stakeholders Involved; Current Status; Next Steps.
+
+ADMIN TIME — (1) Email responses: each email {{FIRST_NAME}} sent or replied to (time, recipient, subject, customer/project, one-line purpose/outcome), grouped by customer/project; (2) Teams messages answered: each Teams chat/channel message {{FIRST_NAME}} sent (time, chat/channel or person, customer/project, one-line purpose/outcome); (3) Totals: count of emails sent/replied, count of Teams messages sent, number of distinct conversations, and estimated admin time at ~5 min per email reply and ~2 min per Teams message, computed in code and labeled as an estimate; (4) Unanswered items: emails or Teams messages directed at {{FIRST_NAME}} that day still without a reply from him.
+
+ADMINISTRATIVE & INTERNAL ACTIVITIES — internal meetings, timesheet activities, scheduling/planning, reporting, documentation updates, team coordination, training/compliance, process improvement and other non-customer work, each with Activity and Outcome.
+
+CHRONOLOGICAL WORK LOG — by time: Activity, Customer/Project, Outcome, Decisions Made.
+
+MAJOR ACCOMPLISHMENTS (include milestones reached)
+
+RISKS / ISSUES (include escalations)
+
+TODAY'S PRIORITIES (follow-ups due today and meetings on today's calendar)
+
+SOURCE NOTES (sources not accessible or with no data)
+
+CONNECTWISE TIME ENTRIES (12:00 AM – 11:59 PM) — the LAST section of the email. One chronological table for the whole day (midnight to midnight) with no overlaps, columns: Start, End, Duration (hours, decimal), Entry Type (Ticket / Meeting / Project Work / Lunch / Admin / After-hours), Ticket # or Meeting Name, Customer/Project, Notes to enter (one line describing the work). Rules:
+
+- MINIMUM 15 MINUTES: every entry is at least 15 minutes (0.25 hours). Anything that took less than 15 minutes is automatically recorded as 15 minutes. All times are on 15-minute boundaries (:00, :15, :30, :45).
+- Meetings use their actual calendar start and end times, rounded out to 15-minute boundaries (a meeting shorter than 15 minutes becomes 15 minutes).
+- Ticket and project work uses the exact times found in the data. When only a timestamp is known (an email or Teams reply, a ticket note, a document save), create a 15-minute block ending at that time (30 minutes for a document edit), aligned to 15-minute boundaries. Where a ticket note shows a start–end range, use that range (minimum 15 minutes). Combine back-to-back or overlapping blocks for the same ticket or project.
+- Core day 8:00 AM – 5:00 PM: lunch is 2:00–3:00 PM. If a meeting or logged work overlaps 2:00–3:00, move lunch to the nearest free full hour (try 12:00–1:00 first, then 1:00–2:00, 3:00–4:00, 11:00–12:00) and say so in the notes. Every remaining blank interval between 8:00 AM and 5:00 PM is an Admin entry (notes: "Email, Teams, ticket queue review and internal coordination").
+- Outside 8:00 AM – 5:00 PM (12:00 AM–8:00 AM and 5:00 PM–11:59 PM): include every piece of work found (emails or Teams messages sent, meetings attended, ticket notes, document edits) as its own entry, marked After-hours, with exact times and the same 15-minute minimum. Do NOT fill blank time outside 8–5 with Admin.
+- Below the table, show totals computed in code: hours per ticket, per meeting, per customer/project, Lunch, Admin, core-day total (8:00–5:00, must equal 9.0 hours including lunch / 8.0 excluding), after-hours total, and grand total worked for the day (core-day excluding lunch plus after-hours).
+- State that block lengths for timestamp-only items are estimates.
+
+Send the finished summary as a well-formatted HTML email (clear headings and tables) to {{EMAIL}} only, with the subject "Daily Work Activity Summary – [previous workday, e.g. Monday, October 19, 2026]". If there was no activity that day (e.g. holiday or PTO), send a short email to {{EMAIL}} saying so instead.
+
+After building the report, also save the CONNECTWISE TIME ENTRIES table as a CSV file (UTF-8) named `CWTime-<report date as yyyy-MM-dd>.csv` and upload it to my OneDrive folder `{{REPORTS_PATH}}`. Do this every run, before sending the email, and confirm the upload succeeded. Columns, in this order, with every value in double quotes: `Date,Start,End,Hours,EntryType,TicketOrMeeting,Customer,Notes`. Date is yyyy-MM-dd; Start and End are like `8:00 AM`; Hours is decimal (0.25); TicketOrMeeting uses `#1234567` for tickets and `—` when empty; one row per table row, including Lunch. If a file for that date already exists, replace it.
