@@ -18,7 +18,8 @@
 param([string] $InstallPath)
 
 $ErrorActionPreference = 'Stop'
-$Src = $PSScriptRoot
+#$Src                   = $PSScriptRoot
+$Src = 'C:\GitHub\Repositories\CW-TimeEntry-Automation'
 
 function Ask([string]$Prompt, [string]$Default) {
     $suffix = ''
@@ -32,7 +33,7 @@ function AskInt([string]$Prompt, [int]$Default = -1) {
         $d = ''; if ($Default -ge 0) { $d = "$Default" }
         $a = Ask $Prompt $d
         $n = 0
-        if ([int]::TryParse(($a -replace '^#',''), [ref]$n)) { return $n }
+        if ([int]::TryParse(($a -replace '^#', ''), [ref]$n)) { return $n }
         Write-Host "  Please enter a number." -ForegroundColor Yellow
     }
 }
@@ -47,7 +48,7 @@ $OneDriveRoot = $env:OneDriveCommercial
 if (-not $OneDriveRoot) { $OneDriveRoot = $env:OneDrive }
 if (-not $InstallPath) {
     if ($OneDriveRoot) { $def = Join-Path $OneDriveRoot 'Documents\CW Time Entry Automation' }
-    else               { $def = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'CW Time Entry Automation' }
+    else { $def = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'CW Time Entry Automation' }
     $InstallPath = Ask 'Install folder (must be inside your work OneDrive)' $def
 }
 foreach ($d in $InstallPath, (Join-Path $InstallPath 'Reports'), (Join-Path $InstallPath 'logs')) {
@@ -58,18 +59,18 @@ foreach ($d in $InstallPath, (Join-Path $InstallPath 'Reports'), (Join-Path $Ins
 Write-Host "`n-- About you --" -ForegroundColor Cyan
 $upn = $null
 try { $upn = (whoami /upn 2>$null) } catch { }
-$Email   = Ask 'Your work email' $upn
-$Name    = Ask 'Your full name (as it should appear in the report)' ''
-$Title   = Ask 'Your job title' ''
+$Email = Ask 'Your work email' $upn
+$Name = Ask 'Your full name (as it should appear in the report)' 'Toby Blanchard'
+$Title = Ask 'Your job title' 'Senior Engineer - Modern Work'
 $OrgName = Ask 'Company name' 'Global Data Systems'
-$Member  = Ask 'Your ConnectWise member identifier (your CW login name)' (($Email -split '@')[0])
+$Member = Ask 'Your ConnectWise member identifier (your CW login name)' (($Email -split '@')[0])
 
 # ------------------------------------------------------------------ ConnectWise API
 Write-Host "`n-- ConnectWise API (get these from your ConnectWise admin) --" -ForegroundColor Cyan
-$Server    = Ask 'ConnectWise URL' 'https://connectwise.getgds.com'
-$Company   = Ask 'ConnectWise company ID' 'GDS'
-$ClientId  = Ask 'ConnectWise clientId' 'f41f250c-b38c-4806-abf9-28a6c339eb89'
-$PublicKey = ''
+$Server = Ask 'ConnectWise URL' 'https://connectwise.getgds.com'
+$Company = Ask 'ConnectWise company ID' 'GDS'
+$ClientId = Ask 'ConnectWise clientId' 'f41f250c-b38c-4806-abf9-28a6c339eb89'
+$PublicKey = 'YIOwZNbLiNStwS6G'
 while (-not $PublicKey) { $PublicKey = Ask 'API public key' '' }
 $KeyFile = Join-Path $InstallPath 'cw-privatekey.xml'
 Read-Host 'API private key (hidden; stored encrypted for your Windows account only)' -AsSecureString | Export-Clixml -Path $KeyFile
@@ -77,12 +78,11 @@ Read-Host 'API private key (hidden; stored encrypted for your Windows account on
 # ------------------------------------------------------------------ where time goes
 Write-Host "`n-- Where time is posted --" -ForegroundColor Cyan
 Write-Host "Rows that already contain a ticket number (#1234567) always go to that ticket."
-$AdminTicket   = AskInt 'Ticket number for ADMIN time (email, Teams, queue review)'
-$MeetingTicket = AskInt 'Ticket number for MEETING time'
-$Internal      = Ask 'Customer names treated as internal / not billable (comma-separated, * = wildcard)' 'GDS*,Global Data Systems*,Internal,Unidentified*'
-$RunTime       = Ask 'Time to post each weekday (after your morning report arrives)' '9:00AM'
-$EmailSummary  = (Ask 'Email yourself a summary after each run? Needs CLASSIC Outlook (y/n)' 'n') -match '^[Yy]'
-
+$AdminTicket = AskInt 'Ticket number for ADMIN time (email, Teams, queue review)' '1262451'
+#$AdminTicket   = AskInt 'Ticket number for ADMIN time (email, Teams, queue review)' ''
+$MeetingTicket = AskInt 'Ticket number for MEETING time' '1262454'
+$Internal = Ask 'Customer names treated as internal / not billable (comma-separated, * = wildcard)' 'GDS*,Global Data Systems*,Internal,Unidentified*'
+10
 # ------------------------------------------------------------------ install files + config
 Copy-Item (Join-Path $Src 'Sync-CWTimeEntries.ps1') $InstallPath -Force
 $Sync      = Join-Path $InstallPath 'Sync-CWTimeEntries.ps1'
